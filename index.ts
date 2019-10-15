@@ -1,6 +1,7 @@
 import { of, fromEvent, merge } from 'rxjs'; 
 import { map, startWith } from 'rxjs/operators';
 
+// Fastest but not very readable
 function withList() {
   const width = window.innerWidth;
   const arr = [568, 0, 768, 1, 1024, 2];
@@ -16,6 +17,9 @@ function withList() {
   return size;
 }
 
+
+// Proposed way: Cannot find way to prevent key conversion to string 
+// Both Object.keys/for in do this
 function withMapList() {
   const width = window.innerWidth;
   const arr = [
@@ -27,7 +31,7 @@ function withMapList() {
   const start = performance.now();
   let size = 0;
   size = arr.filter(elem => {
-    // Also converts to Number
+    // Also converts to string
     for(const key in elem){
       if (Number(key) < width) {
         return true;
@@ -36,13 +40,14 @@ function withMapList() {
     }
   }).unshift();
 
-  console.log(`size is: ${size}`);
   const end = performance.now();
   console.log(`withMapList: Total time ${end - start}`);
 
   return size;
 }
 
+// Current way
+// Not fastest but faster than withMapList
 function withMap() {
   const map = {
 	  568: 0,
@@ -82,12 +87,13 @@ const withML = fromEvent(window, "resize").pipe(
 merge(list, withM, withML).subscribe();
 
 function triggerResize(times) {
-
   for (let i = 0; i <= times; i+=1) {
     console.log(`Loop No: ${i}`);
     window.dispatchEvent(new Event("resize"));
   }
 }
 
-triggerResize(10);
-// withList();
+// Simulate Risze Event
+// triggerResize(10);
+
+merge(list, withM, withML).subscribe();
